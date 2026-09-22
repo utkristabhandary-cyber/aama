@@ -18,6 +18,7 @@ import io
 
 import openpyxl
 
+from django.db import transaction
 from django.http import HttpResponse
 from rest_framework import serializers, status
 from rest_framework.decorators import action
@@ -213,14 +214,17 @@ class TimesheetEntryViewSet(ModelViewSet):
                 raise PermissionDenied(
                     "A submitted entry is awaiting admin confirmation."
                 )
-        if instance.status == TimesheetEntryStatus.REJECTED:
-            instance.status = TimesheetEntryStatus.DRAFT
-            instance.rejection_reason = ""
-            instance.save(update_fields=["status", "rejection_reason", "updated_at"])
-        data = dict(serializer.validated_data)
-        data["teacher"] = instance.teacher
-        self._check_overlap(data, instance=instance)
-        serializer.save()
+        with transaction.atomic():
+            if instance.status == TimesheetEntryStatus.REJECTED:
+                instance.status = TimesheetEntryStatus.DRAFT
+                instance.rejection_reason = ""
+                instance.save(
+                    update_fields=["status", "rejection_reason", "updated_at"]
+                )
+            data = dict(serializer.validated_data)
+            data["teacher"] = instance.teacher
+            self._check_overlap(data, instance=instance)
+            serializer.save()
 
     def perform_destroy(self, instance):
         if instance.status == TimesheetEntryStatus.CONFIRMED:

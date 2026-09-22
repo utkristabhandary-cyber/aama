@@ -576,3 +576,71 @@ class TimesheetSummaryExportTests(TimesheetBase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(response.data["by_day"][0]["entry_date"], "2026-04-10")
+
+
+class TimesheetRejectedEditAtomicTests(TimesheetBase):
+    """Editing a rejected entry must be atomic.
+
+    Phase K regression: resetting a rejected entry to DRAFT and then failing
+    the overlap check must NOT leave the DRAFT reset persisted behind the 400.
+    """
+
+    @staticmethod
+    def _rejected_entry(teacher, subject, semester, section, **overrides):
+        entry = TimesheetEntry.objects.create(
+            teacher=teacher,
+            entry_date=overrides.get("entry_date", date(2026, 9, 7)),
+            type=TimesheetEntryType.CLASS,
+            subject=subject,
+            semester=semester,
+            start_time=overrides.get("start_time", time(9, 0)),
+            end_time=overrides.get("end_time", time(10, 0)),
+            status=TimesheetEntryStatus.REJECTED,
+            rejection_reason="Needs correction.",
+        )
+        entry.sections.add(section)
+        return entry
+
+    def test_failed_edit_of_rejected_entry_keeps_status_rejected(self):
+        TimesheetEntry.objects.create(
+            teacher=self.teacher,
+            entry_date=date(2026, 9, 7),
+            type=TimesheetEntryType.CLASS,
+            subject=self.subject,
+            semester=self.semester,
+            start_time=time(10, 30),
+            end_time=time(11, 30),
+            status=TimesheetEntryStatus.DRAFT,
+        )
+        rejected = self._rejected_entry(
+            self.teacher, self.subject, self.semester, self.section
+        )
+        self._as(self.teacher_user)
+        response = self.client.patch(
+            f"/api/timesheet/entries/{rejected.pk}/",
+            {
+                "start_time": "10:30",
+                "end_time": "11:30",
+                "section_ids": [self.section.pk],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 400)
+        rejected.refresh_from_db()
+        self.assertEqual(rejected.status, TimesheetEntryStatus.REJECTED)
+        self.assertEqual(rejected.rejection_reason, "Needs correction.")
+
+    def test_successful_edit_of_rejected_entry_resets_to_draft(self):
+        rejected = self._rejected_entry(
+            self.teacher, self.subject, self.semester, self.section
+        )
+        self._as(self.teacher_user)
+        response = self.client.patch(
+            f"/api/timesheet/entries/{rejected.pk}/",
+            {"start_time": "14:00", "end_time": "15:30"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        rejected.refresh_from_db()
+        self.assertEqual(rejected.status, TimesheetEntryStatus.DRAFT)
+        self.assertEqual(rejected.rejection_reason, "")

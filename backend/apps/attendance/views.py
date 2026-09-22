@@ -43,6 +43,7 @@ from apps.attendance.services import (
 )
 from apps.attendance.throttling import QrActionThrottle, QrCheckInThrottle
 from apps.students.models import Student
+from apps.teachers.models import Teacher
 
 
 def _teacher_for_request(request):
@@ -175,22 +176,29 @@ class AttendanceSessionViewSet(ModelViewSet):
         section_ids = [
             s.pk for s in serializer.validated_data.get("sections", [])
         ]
-        duplicate = find_duplicate_session(
-            teacher,
-            subject_id,
-            serializer.validated_data["session_date"],
-            section_ids,
-        )
-        if duplicate is not None:
-            raise serializers.ValidationError(
-                {
-                    "section_ids": (
-                        "Attendance for this subject and section(s) is already "
-                        f"recorded on this date (session #{duplicate.pk})."
-                    )
-                }
+        with transaction.atomic():
+            # Serialize creation per teacher so the duplicate check and the
+            # insert cannot race (two concurrent identical creates both pass
+            # find_duplicate_session, then both insert). Locking the teacher
+            # row mirrors the import-session select_for_update pattern.
+            Teacher.objects.select_for_update().get(pk=teacher.pk)
+            duplicate = find_duplicate_session(
+                teacher,
+                subject_id,
+                serializer.validated_data["session_date"],
+                section_ids,
             )
-        serializer.save(created_by=self.request.user, teacher=teacher)
+            if duplicate is not None:
+                raise serializers.ValidationError(
+                    {
+                        "section_ids": (
+                            "Attendance for this subject and section(s) is "
+                            "already recorded on this date (session "
+                            f"#{duplicate.pk})."
+                        )
+                    }
+                )
+            serializer.save(created_by=self.request.user, teacher=teacher)
 
     def perform_update(self, serializer):
         instance = serializer.instance

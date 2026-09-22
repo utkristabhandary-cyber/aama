@@ -210,3 +210,32 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# Production security flags ------------------------------------------------
+# Environment-gated so the plain-HTTP local stack keeps working untouched,
+# while a production deployment can harden without code changes:
+#   DJANGO_SECURE_SSL_REDIRECT=1           redirect HTTP -> HTTPS
+#   DJANGO_SESSION_COOKIE_SECURE=1         session cookie sent over HTTPS only
+#   DJANGO_CSRF_COOKIE_SECURE=1            CSRF cookie sent over HTTPS only
+#   DJANGO_SECURE_HSTS_SECONDS=31536000    enable HSTS for 1 year
+#   DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=1 / DJANGO_SECURE_HSTS_PRELOAD=1
+# These only apply once DEBUG is off and SSL is terminated before Django;
+# see the Phase K production-hardening report for the full checklist.
+def _env_bool(name):
+    return os.getenv(name, "false").lower() in {"1", "true", "yes", "on"}
+
+
+SECURE_SSL_REDIRECT = _env_bool("DJANGO_SECURE_SSL_REDIRECT")
+SECURE_PROXY_SSL_HEADER = (
+    ("HTTP_X_FORWARDED_PROTO", "https") if SECURE_SSL_REDIRECT else None
+)
+SESSION_COOKIE_SECURE = _env_bool("DJANGO_SESSION_COOKIE_SECURE")
+CSRF_COOKIE_SECURE = _env_bool("DJANGO_CSRF_COOKIE_SECURE")
+SECURE_HSTS_SECONDS = int(os.getenv("DJANGO_SECURE_HSTS_SECONDS", "0"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = _env_bool(
+    "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS"
+)
+SECURE_HSTS_PRELOAD = _env_bool("DJANGO_SECURE_HSTS_PRELOAD")
+SECURE_REFERRER_POLICY = os.getenv("DJANGO_SECURE_REFERRER_POLICY", "same-origin")
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"

@@ -228,6 +228,18 @@ class ImportConfirmView(APIView):
                 {"detail": exc.message, "code": exc.code},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        except Exception:
+            # A mid-batch DB error (e.g. a unique-constraint race against a
+            # concurrent admin import) rolled the transaction back; the session
+            # stays pending so the admin can inspect and retry.
+            return Response(
+                {
+                    "detail": "The import could not be committed and was rolled "
+                    "back. Review the rows and try again.",
+                    "code": "import_failed",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {
