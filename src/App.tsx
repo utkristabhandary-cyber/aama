@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -92,12 +92,24 @@ const MainContent: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('dashboard');
   const [activeSlotId, setActiveSlotId] = useState<string | undefined>(undefined);
 
+  // Reset the view when the signed-in identity changes (login, logout, or role
+  // switch), so a new session always opens on its own dashboard instead of
+  // inheriting the previous account's navigation state.
+  const userIdRef = useRef<string | undefined>(user?.id);
+  useEffect(() => {
+    if (user?.id !== userIdRef.current) {
+      userIdRef.current = user?.id;
+      setCurrentView('dashboard');
+      setActiveSlotId(undefined);
+    }
+  }, [user?.id]);
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-3">
           <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-slate-400 font-medium tracking-wide">Loading Academic Portal...</p>
+          <p className="text-xs text-slate-600 font-medium tracking-wide">Loading Academic Portal...</p>
         </div>
       </div>
     );

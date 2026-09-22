@@ -81,6 +81,7 @@ export const Header: React.FC<HeaderProps> = ({
       academic: 'Academic Structure',
       semesters: 'Semesters',
       sections: 'Sections',
+      'section-allocation': 'Section Allocation Import',
       subjects: 'Subjects & Curriculum',
       teachers: 'Faculty & Teachers',
       students: 'Student Directory',
@@ -89,6 +90,8 @@ export const Header: React.FC<HeaderProps> = ({
       attendance: 'Attendance Overview',
       'take-attendance': 'Conduct Class Attendance',
       'attendance-history': 'Attendance History',
+      'qr-scanner': 'QR Attendance Scanner',
+      'my-history': 'Attendance History',
       'my-classes': 'Assigned Classes',
       'my-timetable': 'My Schedule',
       'my-attendance': 'My Attendance Record',
@@ -99,6 +102,9 @@ export const Header: React.FC<HeaderProps> = ({
       settings: 'System Settings',
       profile: 'User Profile',
     };
+    if (view === 'timesheet') {
+      return role === 'teacher' ? 'My Timesheet' : 'Teacher Timesheet';
+    }
     return map[view] || 'Academic Portal';
   };
 

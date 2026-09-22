@@ -256,11 +256,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Institutional Footer */}
         <div className="p-4 border-t border-slate-800/80 bg-slate-950/30">
-          <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span>Academic Year</span>
-            <span className="font-semibold text-slate-300 font-mono">2026-2027</span>
-          </div>
-          <p className="text-[10px] text-slate-400 mt-1">Enterprise Edition v2.4</p>
+          <p className="text-[11px] font-semibold text-slate-300">AAMS v2</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">Web-only institutional edition</p>
         </div>
       </aside>
     </>

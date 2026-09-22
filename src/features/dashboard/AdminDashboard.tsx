@@ -289,7 +289,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div>
               <CardTitle>Attendance Health & Trends</CardTitle>
               <CardDescription>
-                Consolidated attendance performance for Semester 1 cohorts
+                Consolidated attendance performance from live session records
               </CardDescription>
             </div>
             <Button

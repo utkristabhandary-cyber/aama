@@ -158,7 +158,7 @@ export const StudentAttendanceView: React.FC = () => {
 
       {/* Summary KPI Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-indigo-100 bg-gradient-to-br from-white to-indigo-50/40">
+        <Card className="border-indigo-100 bg-indigo-50/30">
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Overall Attendance</span>

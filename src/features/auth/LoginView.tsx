@@ -52,24 +52,21 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background Institutional Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
-
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
         {/* Branding Logo */}
         <div className="flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-xl shadow-indigo-500/20 mb-3 border border-indigo-400/30">
+          <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/30 mb-3">
             <GraduationCap className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-black tracking-tight text-white">AAMS Academic Portal</h2>
-          <p className="text-xs text-slate-400 mt-1 max-w-xs leading-relaxed">
+          <h2 className="text-2xl font-black tracking-tight text-slate-900">AAMS Academic Portal</h2>
+          <p className="text-xs text-slate-500 mt-1.5 max-w-xs leading-relaxed">
             Institutional Attendance Management & Academic Operations System
           </p>
         </div>
 
         {/* Login Form Card */}
-        <div className="mt-8 bg-white py-8 px-6 shadow-2xl rounded-2xl sm:px-10 border border-slate-100">
+        <div className="mt-8 bg-white py-8 px-6 shadow-xl shadow-slate-900/5 rounded-2xl sm:px-10 border border-slate-200">
           <form className="space-y-4" onSubmit={handleSubmit}>
             {error && (
               <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium leading-relaxed">
@@ -121,14 +118,14 @@ export const LoginView: React.FC = () => {
             </Button>
           </form>
 
-          {/* Quick Demo Logins */}
-          <div className="mt-6 pt-6 border-t border-slate-100">
+          {/* Developer demo sign-in (build-time convenience, not a product surface) */}
+          <div className="mt-6 pt-5 border-t border-slate-100">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Quick Demo Access
+                Developer demo sign-in
               </span>
-              <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-medium">
-                Fill Credentials
+              <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">
+                Seed accounts
               </span>
             </div>
 
@@ -137,9 +134,9 @@ export const LoginView: React.FC = () => {
                 type="button"
                 onClick={() => handleDemoFill('admin')}
                 disabled={isLoading}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-100/70 transition-all text-center group cursor-pointer"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all text-center group cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center mb-1.5 shadow-2xs group-hover:scale-105 transition-transform">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center mb-1.5">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <span className="text-xs font-bold text-slate-800">Admin</span>
@@ -150,9 +147,9 @@ export const LoginView: React.FC = () => {
                 type="button"
                 onClick={() => handleDemoFill('teacher')}
                 disabled={isLoading}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-100/70 transition-all text-center group cursor-pointer"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all text-center group cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center mb-1.5 shadow-2xs group-hover:scale-105 transition-transform">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center mb-1.5">
                   <Briefcase className="w-4 h-4" />
                 </div>
                 <span className="text-xs font-bold text-slate-800">Teacher</span>
@@ -163,9 +160,9 @@ export const LoginView: React.FC = () => {
                 type="button"
                 onClick={() => handleDemoFill('student')}
                 disabled={isLoading}
-                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-blue-100 bg-blue-50/50 hover:bg-blue-100/70 transition-all text-center group cursor-pointer"
+                className="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all text-center group cursor-pointer"
               >
-                <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center mb-1.5 shadow-2xs group-hover:scale-105 transition-transform">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center mb-1.5">
                   <User className="w-4 h-4" />
                 </div>
                 <span className="text-xs font-bold text-slate-800">Student</span>
@@ -174,8 +171,8 @@ export const LoginView: React.FC = () => {
             </div>
 
             <p className="text-[11px] text-slate-400 text-center mt-3">
-              Demo accounts share the password{` `}
-              <code className="text-slate-600 font-mono">AaMS@#2026!</code>
+              Demo accounts share the password{' '}
+              <code className="text-slate-500 font-mono">AaMS@#2026!</code>
             </p>
           </div>
         </div>

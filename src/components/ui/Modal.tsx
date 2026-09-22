@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 export interface ModalProps {
@@ -10,6 +10,9 @@ export interface ModalProps {
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl';
 }
 
+const FOCUSABLE_SELECTOR =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -18,17 +21,56 @@ export const Modal: React.FC<ModalProps> = ({
   children,
   maxWidth = 'lg',
 }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
+    if (!isOpen) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter(el => !el.hasAttribute('disabled'));
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey) {
+        if (active === first || (active && !dialog.contains(active))) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || (active && !dialog.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    }
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Move focus into the dialog on open (cleanup restores it on close).
+    const focusTimer = window.setTimeout(() => {
+      dialogRef.current?.focus();
+    }, 0);
+
     return () => {
+      window.clearTimeout(focusTimer);
       document.body.style.overflow = 'unset';
       window.removeEventListener('keydown', handleKeyDown);
+      previousFocusRef.current?.focus();
     };
   }, [isOpen, onClose]);
 
@@ -51,7 +93,9 @@ export const Modal: React.FC<ModalProps> = ({
         aria-hidden="true"
       />
       <div
-        className={`relative w-full ${maxW} bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-10 animate-in zoom-in-95 duration-150 my-auto`}
+        ref={dialogRef}
+        tabIndex={-1}
+        className={`relative w-full ${maxW} bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-10 animate-in zoom-in-95 duration-150 my-auto outline-none`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

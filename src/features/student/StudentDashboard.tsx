@@ -134,7 +134,7 @@ export const StudentDashboard: React.FC<{ onNavigate: (viewId: string) => void }
   return (
     <div className="space-y-6">
       {/* Student Welcome Banner */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900 to-slate-900 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-slate-900 text-white shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="text-xs uppercase font-bold tracking-wider text-indigo-300 block">
             Student Academic Dossier

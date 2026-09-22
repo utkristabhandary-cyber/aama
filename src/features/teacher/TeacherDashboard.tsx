@@ -97,7 +97,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-800 to-slate-900 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-emerald-900 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="text-xs uppercase font-bold tracking-wider text-emerald-300 block">
             Faculty Teaching Portal

@@ -89,7 +89,7 @@ export const StudentProfileView: React.FC = () => {
 
       {/* Primary Profile Card */}
       <Card className="overflow-hidden border-slate-200">
-        <div className="h-24 bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-800" />
+        <div className="h-24 bg-indigo-700" />
         <CardContent className="pt-0 relative px-6 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-12 mb-6">
             <div className="flex items-end gap-4">
