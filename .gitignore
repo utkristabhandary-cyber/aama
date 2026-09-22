@@ -1,0 +1,47 @@
+# AAMS v2 web-only baseline ignores
+# Local credentials & environment
+.env*
+!.env.example
+
+# Node / frontend build output & dependencies
+node_modules/
+build/
+dist/
+coverage/
+sourcemaps/
+.vite/
+*.tsbuildinfo
+
+# Alternate package-manager lockfile (project uses npm; package-lock.json is authoritative)
+bun.lock
+bunfig.toml
+
+# Python / Django generated artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+backend/staticfiles/
+backend/media/
+
+# Local browser/test evidence & logs
+.playwright-mcp/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

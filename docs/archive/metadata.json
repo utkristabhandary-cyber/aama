@@ -1,0 +1,6 @@
+{
+  "name": "AAMS — Academic Attendance Management System",
+  "description": "Enterprise-grade academic attendance management platform for institutional administrators, teachers, and students.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
