@@ -182,12 +182,9 @@ export const TimetableImportWizard: React.FC<TimetableImportWizardProps> = ({
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                   Timetable Import
-                  <Badge variant="outline" className="border-amber-400/40 text-amber-300 text-xs py-0.5">
-                    Live Backend Pipeline
-                  </Badge>
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Upload a student timetable workbook and let the server parse, match, validate and plan the import.
+                  Import class schedules from a timetable workbook.
                 </p>
               </div>
             </div>
@@ -252,13 +249,15 @@ export const TimetableImportWizard: React.FC<TimetableImportWizardProps> = ({
           {/* STEP 1: UPLOAD */}
           {currentStep === 1 && (
             <div className="space-y-6">
-              <div className="text-center max-w-xl mx-auto py-4">
+              <div className="text-center max-w-xl mx-auto py-2">
                 <h3 className="text-lg font-bold text-slate-900">Upload Timetable Spreadsheet</h3>
                 <p className="text-sm text-slate-600 mt-1">
-                  Upload the institutional master schedule as an Excel (.xlsx) workbook. The server parses the file,
-                  matches it against existing academic records, and returns a read-only preview before anything is committed.
+                  Choose the timetable workbook. Check the column requirements below, then
+                  select your .xlsx file.
                 </p>
               </div>
+
+              <ImportTemplateCard kind="timetable" />
 
               <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center bg-white hover:border-blue-500 transition cursor-pointer">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600">
@@ -306,16 +305,13 @@ export const TimetableImportWizard: React.FC<TimetableImportWizardProps> = ({
                 </div>
               )}
 
-              <ImportTemplateCard kind="timetable" />
-
               <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div className="text-xs text-amber-800 space-y-1">
-                  <p className="font-semibold">Preview writes nothing</p>
+                  <p className="font-semibold">Nothing is written until you confirm.</p>
                   <p>
-                    Analyzing your file creates a pending import session but commits no timetable data. Rows are only
-                    written when you confirm the import, inside a single transactional commit, and identical existing
-                    rows are never duplicated.
+                    This step builds a read-only plan. Rows are committed only when you confirm
+                    the import, and identical existing rows are never duplicated.
                   </p>
                 </div>
               </div>
@@ -334,9 +330,6 @@ export const TimetableImportWizard: React.FC<TimetableImportWizardProps> = ({
                     <span className="font-semibold text-slate-700">{preview.rows.length}</span> rows evaluated
                   </p>
                 </div>
-                <Badge variant="info">
-                  Session: <span className="font-mono">{preview.session_uuid.slice(0, 8)}…</span>
-                </Badge>
               </div>
 
               {/* Summary counts */}
@@ -559,9 +552,6 @@ export const TimetableImportWizard: React.FC<TimetableImportWizardProps> = ({
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-900">Import Successfully Completed</h3>
-                    <p className="text-xs text-slate-600 mt-1">
-                      Session: <span className="font-mono font-bold text-slate-800">{confirmResult.session_uuid}</span>
-                    </p>
                   </div>
 
                   <div className="grid grid-cols-3 gap-3 text-left">

@@ -150,7 +150,20 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           value={`${teacherData.averageRate}%`}
           icon={<CheckCircle2 className="w-5 h-5 text-indigo-600" />}
           subtitle="Across your student sections"
-          badge={{ text: 'Above Target', variant: 'info' }}
+          badge={{
+            text:
+              teacherData.averageRate === 0
+                ? 'No data yet'
+                : teacherData.averageRate >= 75
+                ? 'At / above 75%'
+                : 'Below 75%',
+            variant:
+              teacherData.averageRate === 0
+                ? 'default'
+                : teacherData.averageRate >= 75
+                ? 'success'
+                : 'danger',
+          }}
           onClick={() => onNavigate('reports')}
         />
         <StatCard
@@ -158,7 +171,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
           value={teacherData.sessionsConducted}
           icon={<Clock className="w-5 h-5 text-purple-600" />}
           subtitle="Verified attendance logs"
-          badge={{ text: 'Audit Ready', variant: 'default' }}
+          badge={{
+            text: teacherData.sessionsConducted === 0 ? 'No sessions' : 'Recorded',
+            variant: 'default',
+          }}
           onClick={() => onNavigate('attendance-history')}
         />
         <StatCard

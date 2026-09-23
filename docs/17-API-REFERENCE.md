@@ -133,7 +133,7 @@ Phase G removed the localStorage mock layer, so every admin screen is now server
 | Reports (admin summary) | YES | apiClient |
 | Attendance sessions/records | YES | apiClient |
 | **Timetable admin CRUD** | **YES** | apiClient (`/api/academics/timetable/` + import endpoints) |
-| **Student/Teacher/Timetable imports** | **YES (Phase H)** | `importsService` (preview/stage/confirm) + template/export downloads (`/api/imports/{kind}/…`, `/api/academics/timetable-import/…`) |
+| **Student/Teacher/Timetable imports** | **YES (Phase H)** | `studentImportService` / `teacherImportService` / `timetableLiveApi` (preview/stage/confirm) + template/export downloads (`/api/imports/{kind}/…`, `/api/academics/timetable-import/…`) |
 | **Template & export downloads** | **YES (Phase H)** | Server-generated `.xlsx` (`Download Template` / `Export .xlsx` on Students, Teachers, Timetable; admin-only) |
 | **Section allocation CSV** | **YES** | sectionAllocationService (live preview; apply = `PATCH /api/students/{id}/` per row, incl. `section: null` for unallocations) |
 | **Promotion** | **Read-only** (live cohorts + `/api/reports/admin/`); Execute disabled — no backend promotion endpoint | PromotionView |

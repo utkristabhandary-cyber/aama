@@ -30,6 +30,10 @@ export interface TemplateContract {
   field?: Record<string, string>;
   /** Flags required columns in header order. */
   required: string[];
+  /** Human-readable optional (stored) columns shown to the admin. */
+  optionalDescription?: string;
+  /** Human-readable note on recognised-but-not-saved / extra columns. */
+  notSavedDescription?: string;
   /** Free-text guidance shown under the uploader. */
   guidance: string;
 }
@@ -124,6 +128,16 @@ export const TIMETABLE_HEADER_STATUS: Record<string, ImportColumnStatus> = {
   'Class Type': 'mapped', 'Room': 'mapped',
 };
 
+/** Real backend file limits shared by every import engine. Mirrors the
+ *  timetable importer's constants (5 MB / 5,000 data rows / .xlsx only /
+ *  first worksheet) re-exported by ``apps/imports/engine/constants.py``. */
+export const IMPORT_FILE_REQUIREMENTS: string[] = [
+  'Microsoft Excel .xlsx workbooks only',
+  'Maximum file size: 5 MB',
+  'Up to 5,000 data rows',
+  'The first worksheet is read',
+];
+
 export const TEMPLATE_CONTRACTS: Record<string, TemplateContract> = {
   students: {
     kind: 'students',
@@ -145,11 +159,19 @@ export const TEMPLATE_CONTRACTS: Record<string, TemplateContract> = {
       'Status': 'status',
     },
     required: ['Student ID', 'Name', 'Email', 'Roll Number'],
+    optionalDescription:
+      'DOB (A.D.), Phone, Perm. Address, Program/Sec., Year/Semester, ' +
+      'Joined Date, Father\u2019s Name, Father\u2019s Phone, Status \u2014 ' +
+      'stored when present and valid.',
+    notSavedDescription:
+      'S.N., DOB (B.S.) and Gender are read and reported but not stored. ' +
+      'All other official column names (Id Number, National ID No., ' +
+      'Temp. Address, Type, Shift, Religion, Blood Group, Mother\u2019s Name, ' +
+      'Lunch, Remarks, Sponsor Name, \u2026) are accepted and safely ignored. ' +
+      'Extra columns are reported as unrecognised and do not block the import.',
     guidance:
-      'The official institutional roster workbook. Only ID, Name, Email and ' +
-      'Roll Number are mandatory; optional mapped columns (DOB (A.D.), Phone, ' +
-      'Program/Sec., Year/Semester, Status, Joined Date, Father\u2019s Name, ' +
-      'Father\u2019s Phone, Perm. Address) are stored when present.',
+      'The official institutional roster workbook. Column names are matched ' +
+      'flexibly, so familiar variants are accepted for the required fields.',
   },
   teachers: {
     kind: 'teachers',
@@ -159,9 +181,14 @@ export const TEMPLATE_CONTRACTS: Record<string, TemplateContract> = {
     headers: TEACHER_SYSTEM_HEADERS,
     status: TEACHER_HEADER_STATUS,
     required: ['Teacher ID', 'Name', 'Email'],
+    optionalDescription:
+      'Phone, Department, Designation, Qualification, Status \u2014 ' +
+      'stored when present and valid.',
+    notSavedDescription:
+      'Extra columns are reported as unrecognised and do not block the import.',
     guidance:
       'Current AAMS system format (no institutional teacher workbook has been ' +
-      'supplied yet). Teacher ID, Name and Email are required.',
+      'supplied yet).',
   },
   timetable: {
     kind: 'timetable',
@@ -171,11 +198,14 @@ export const TEMPLATE_CONTRACTS: Record<string, TemplateContract> = {
     headers: TIMETABLE_SYSTEM_HEADERS,
     status: TIMETABLE_HEADER_STATUS,
     required: ['Semester', 'Section', 'Day', 'Start Time'],
+    optionalDescription:
+      'End Time, Module Code, Module Title, Teacher ID, Lecturer, Class Type, ' +
+      'Room \u2014 stored when present and valid. Every row also needs a ' +
+      'module (Module Code or Module Title) and a teacher (Teacher ID or ' +
+      'Lecturer) to be imported.',
     guidance:
       'Current AAMS system format (no institutional timetable workbook has been ' +
-      'supplied yet). Semester, Section, Day and Start Time are required; a ' +
-      'module (Module Code or Module Title) and a teacher (Teacher ID or ' +
-      'Lecturer) must also be present per row.',
+      'supplied yet).',
   },
 };
 

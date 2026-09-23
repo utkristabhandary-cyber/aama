@@ -31,7 +31,7 @@ Configuration comes from `.env` at the repository root (git-ignored; template in
 
 ```bash
 npm install
-npm run dev         # http://localhost:3000 (Vite, proxies /api to the backend)
+npm run dev         # http://localhost:3000 (Vite; the app calls VITE_API_BASE_URL directly, default http://127.0.0.1:8000/api)
 npm run lint        # tsc --noEmit
 npm run build       # esbuild production bundle
 ```

@@ -670,7 +670,7 @@ one commits, the loser returns 400 `already_confirmed` (no duplicate rows).
 - **NEW:** `Import` button + entry in `StudentsView.tsx` / `TeachersView.tsx`
   toolbar opening the wizard.
 - **NEW:** services `studentImportService.ts` / `teacherImportService.ts`
-  (mirror `timetableImportService.ts`), types in `src/types/api.ts` and
+  (mirror the timetable live import API, `timetableLiveApi.ts`), types in `src/types/api.ts` and
   `src/types/index.ts`.
 - **NEW:** forced password-change screen wired into `AuthContext`/`AppLayout`
   when `me.must_change_password` is true; change-password + admin reset UI in
@@ -953,8 +953,11 @@ Teachers, and Timetable**, with strict **UPLOAD ≠ IMPORT** semantics.
   `TimetableImportWizard`) run the 7-step pipeline (Upload → System Check → Data
   Quality → DB Cross-check → Review → Confirm → Result). The client submits only
   the server-issued `session_uuid`; the server owns the plan.
-- **`ImportTemplateCard`** ("Ready for Analysis / Export") with `Download
-  Template` + `Download Export` embedded in every wizard; export-only cards next
+- **`ImportTemplateCard`** with `Download
+  Template` + `Download Export` embedded above the file picker in every wizard
+  (Phase M: the card now renders the real required/optional column lists, the
+  recognised-but-not-stored note, and the backend file limits, so the admin
+  sees the exact column contract before selecting a file); export-only cards next
   to the toolbar `Export .xlsx` buttons on `StudentsView`, `TeachersView`,
   `TimetableAdminView`.
 - **Safety contract preserved:** blank/bare workbooks are rejected (400, "no

@@ -225,12 +225,9 @@ export const TeacherImportWizard: React.FC<TeacherImportWizardProps> = ({
               <div>
                 <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                   Teacher Import
-                  <Badge variant="outline" className="border-indigo-400/40 text-indigo-300 text-xs py-0.5">
-                    Live Backend Pipeline
-                  </Badge>
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Upload an institutional teacher roster workbook and let the server map, validate, cross-check and plan the import.
+                  Import teachers from the institutional roster workbook.
                 </p>
               </div>
             </div>
@@ -294,13 +291,15 @@ export const TeacherImportWizard: React.FC<TeacherImportWizardProps> = ({
           {/* STAGE 1: UPLOAD */}
           {stage === 1 && (
             <div className="space-y-6">
-              <div className="text-center max-w-xl mx-auto py-4">
+              <div className="text-center max-w-xl mx-auto py-2">
                 <h3 className="text-lg font-bold text-slate-900">Upload Teacher Roster</h3>
                 <p className="text-sm text-slate-600 mt-1">
-                  Upload the institutional teacher master list as an Excel (.xlsx) workbook. The server parses the file,
-                  matches by Teacher ID, cross-checks against the database, and returns a read-only preview.
+                  Choose the teacher roster workbook. Check the column requirements below, then
+                  select your .xlsx file.
                 </p>
               </div>
+
+              <ImportTemplateCard kind="teachers" />
 
               <div className="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center bg-white hover:border-indigo-500 transition cursor-pointer">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
@@ -348,16 +347,14 @@ export const TeacherImportWizard: React.FC<TeacherImportWizardProps> = ({
                 </div>
               )}
 
-              <ImportTemplateCard kind="teachers" />
-
               <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-200 flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
                 <div className="text-xs text-indigo-900 space-y-1">
-                  <p className="font-semibold">Preview writes nothing</p>
+                  <p className="font-semibold">Nothing is written until you confirm.</p>
                   <p>
-                    Analyzing your file creates a pending import session but commits no teacher data. Rows are only written
-                    at the Confirm stage, inside a single all-or-nothing transaction. No user accounts, passwords, or
-                    timetable assignments are created by this import.
+                    This step builds a read-only plan. Rows are committed only at the Confirm
+                    stage, all-or-nothing. This import never creates user accounts, passwords, or
+                    timetable assignments.
                   </p>
                 </div>
               </div>
@@ -368,16 +365,13 @@ export const TeacherImportWizard: React.FC<TeacherImportWizardProps> = ({
           {stage === 2 && preview && summary && (
             <div className="space-y-5">
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">System Check</h3>
-                  <p className="text-xs text-slate-500">
-                    File, worksheet and header/column detection — nothing has been written.
-                  </p>
-                </div>
-                <Badge variant="info">
-                  Session: <span className="font-mono">{preview.session_uuid.slice(0, 8)}…</span>
-                </Badge>
+<div>
+                <h3 className="text-lg font-bold text-slate-900">System Check</h3>
+                <p className="text-xs text-slate-500">
+                  File, worksheet and header/column detection — nothing has been written.
+                </p>
               </div>
+            </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-white p-3 rounded-xl border border-slate-200">
@@ -701,9 +695,6 @@ export const TeacherImportWizard: React.FC<TeacherImportWizardProps> = ({
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Import Successfully Completed</h3>
-                <p className="text-xs text-slate-600 mt-1">
-                  Session: <span className="font-mono font-bold text-slate-800">{confirmResult.session.uuid}</span>
-                </p>
               </div>
 
               <div className="grid grid-cols-4 gap-3 text-left">

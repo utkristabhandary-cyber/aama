@@ -166,6 +166,18 @@ export const TimetableAdminView: React.FC = () => {
     sectionIdByName,
   ]);
 
+  // Slots whose start time falls outside the six canonical matrix blocks.
+  // These are real server-backed sessions, so the weekly matrix must not hide
+  // them (TT-1); they are rendered in an "Other times" band below the grid.
+  const canonicalStarts = useMemo(
+    () => new Set(TIME_SLOTS.map(t => t.split(' - ')[0])),
+    [],
+  );
+  const offGridSlots = useMemo(
+    () => filteredSlots.filter(s => !canonicalStarts.has(s.startTime)),
+    [filteredSlots, canonicalStarts],
+  );
+
   const handleSaveSlot = async (slotData: Omit<TimetableSlot, 'id'>) => {
     try {
       if (selectedSlotForEdit) {
@@ -602,6 +614,47 @@ export const TimetableAdminView: React.FC = () => {
                   </tr>
                 ))}
               </tbody>
+              {offGridSlots.length > 0 && (
+                <tfoot className="bg-amber-50/60">
+                  <tr>
+                    <td className="p-3.5 font-bold text-slate-700 border-r border-slate-200 align-top">
+                      Other times
+                    </td>
+                    {DAYS.map(dayName => {
+                      const dayOffGrid = offGridSlots.filter(s => s.day === dayName);
+                      return (
+                        <td key={dayName} className="p-2 border-r border-slate-200 align-top">
+                          {dayOffGrid.length === 0 ? (
+                            <div className="h-8 flex items-center justify-center text-slate-300 font-mono text-[11px]">
+                              —
+                            </div>
+                          ) : (
+                            <div className="space-y-1.5">
+                              {dayOffGrid.map(slot => {
+                                const sub = subjects.find(s => s.id === slot.subjectId);
+                                const tch = teachers.find(t => t.id === slot.teacherId);
+                                return (
+                                  <div
+                                    key={slot.id}
+                                    className="p-2 rounded-xl border border-amber-200 bg-white text-left shadow-xs"
+                                  >
+                                    <p className="font-semibold text-slate-900 truncate text-[11px]" title={sub?.name}>
+                                      {sub?.name || 'Subject'}
+                                    </p>
+                                    <p className="text-[10px] font-mono text-slate-600 mt-0.5">
+                                      {slot.startTime}–{slot.endTime} • {tch?.name?.split(' ')[0] || 'Teacher'} • {slot.room}
+                                    </p>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                </tfoot>
+              )}
             </table>
           </div>
         </div>

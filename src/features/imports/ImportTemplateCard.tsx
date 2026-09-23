@@ -7,15 +7,14 @@
  * invents column layouts or data.
  */
 import React, { useState } from 'react';
-import { Download, FileSpreadsheet, ShieldCheck } from 'lucide-react';
+import { Check, CheckCircle2, Download, FileSpreadsheet, Info, ShieldCheck } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 import {
   downloadImportFile,
   type ImportExportKind,
 } from '../../services/importExportService';
-import { TEMPLATE_CONTRACTS } from './templateContract';
+import { TEMPLATE_CONTRACTS, IMPORT_FILE_REQUIREMENTS } from './templateContract';
 
 interface ImportTemplateCardProps {
   kind: ImportExportKind;
@@ -84,12 +83,56 @@ export const ImportTemplateCard: React.FC<ImportTemplateCardProps> = ({
             <p className="text-xs text-slate-500 mt-0.5 max-w-xl">{contract.guidance}</p>
           </div>
         </div>
-        <Badge variant="outline" className="text-slate-500 shrink-0">
-          {contract.required.join(' • ')}
-        </Badge>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Required columns
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {contract.required.map(name => (
+              <span
+                key={name}
+                className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-900 text-white text-[11px] font-semibold"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+          <p className="text-[11px] text-slate-500 mt-2">
+            The import is refused if any of these is missing.
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-slate-200 p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-700 flex items-center gap-1.5">
+            <Info className="w-3.5 h-3.5" />
+            Optional columns
+          </p>
+          {contract.optionalDescription ? (
+            <p className="text-xs text-slate-600 mt-1.5">{contract.optionalDescription}</p>
+          ) : null}
+          {contract.notSavedDescription ? (
+            <p className="text-[11px] text-slate-500 mt-2">{contract.notSavedDescription}</p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500">
+        <span className="font-semibold uppercase tracking-wide text-slate-400">
+          File requirements
+        </span>
+        {IMPORT_FILE_REQUIREMENTS.map(req => (
+          <span key={req} className="inline-flex items-center gap-1">
+            <Check className="w-3 h-3 text-emerald-600" />
+            {req}
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
         <Button
           variant="outline"
           size="sm"

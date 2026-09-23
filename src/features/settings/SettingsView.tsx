@@ -61,20 +61,24 @@ export const SettingsView: React.FC = () => {
             </div>
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-                Tardy / Late Credit Factor
+                Late Arrival Handling
               </span>
-              <span className="text-2xl font-bold font-mono text-slate-900 mt-1 block">0.5x</span>
+              <span className="text-2xl font-bold font-mono text-slate-900 mt-1 block">
+                Present
+              </span>
               <span className="text-[11px] text-slate-500">
-                Late arrivals earn half a session credit toward attendance.
+                A late mark is recorded as present and counts in full toward attendance.
               </span>
             </div>
             <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-                Faculty Edit Window
+                Attendance Corrections
               </span>
-              <span className="text-2xl font-bold font-mono text-slate-900 mt-1 block">24h</span>
+              <span className="text-2xl font-bold font-mono text-slate-900 mt-1 block">
+                Until finalised
+              </span>
               <span className="text-[11px] text-slate-500">
-                Allowed duration for attendance corrections by faculty.
+                Faculty may correct attendance until the class session is finalised.
               </span>
             </div>
           </div>

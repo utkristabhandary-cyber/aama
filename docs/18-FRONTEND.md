@@ -23,8 +23,8 @@
 - **`src/services/importExportService.ts`** — `downloadBytes`-based template and
   export downloads (`/api/imports/{kind}/template|export`,
   `/api/academics/timetable-import/template|export`), filename extraction,
-  admin-only; `importsService.ts` / `timetableImportService.ts` cover preview,
-  staging reads, and confirm.
+  admin-only; `studentImportService.ts` / `teacherImportService.ts` /
+  `timetableLiveApi.ts` cover preview, staging reads, and confirm.
 - Frontend test suite is now **75 Vitest tests** (59 Phase G + 16 Phase H:
   `importExportService`, `templateContract`, import presentation/severity/summary,
   timetable import-row presentation, section allocation, helpers).
@@ -55,7 +55,7 @@ src/
 ## API Integration Layer (`src/services/`)
 
 - `apiClient.ts` — fetch wrapper, token from `sessionStorage[u'aams_auth_token']`, base `http://127.0.0.1:8000/api`, 401 handling, pagination unwrap. Central `errorMessage` helper.
-- **Live** API services (use apiClient): `authService`, `semesterService`, `sectionService`, `subjectService`, `assignmentService`, `teacherService`, `studentService` (incl. `updateSectionAssignment` used by section-allocation apply), `holidayService` (read + declare/delete), `attendanceService`, `reportService` (summary + admin analytics), `notificationService` (own-scoped read/mark-read/delete), `sectionAllocationService` (live preview + PATCH apply), `importsService`, `timetableImportService`, `importExportService` (Phase H).
+- **Live** API services (use apiClient): `authService`, `semesterService`, `sectionService`, `subjectService`, `assignmentService`, `teacherService`, `studentService` (incl. `updateSectionAssignment` used by section-allocation apply), `holidayService` (read + declare/delete), `attendanceService`, `reportService` (summary + admin analytics), `notificationService` (own-scoped read/mark-read/delete), `sectionAllocationService` (live preview + PATCH apply), `studentImportService`, `teacherImportService`, `timetableLiveApi`, `importExportService` (Phase H).
 - **Deleted in Phase G** (no longer exists): `src/services/storage.ts`, `src/services/promotionService.ts`, `src/services/academicRules.ts`, `src/data/initialData.ts`. There is **no localStorage data store** in the frontend anymore.
 
 ## What Is Live vs Mock
