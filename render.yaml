@@ -11,7 +11,8 @@ services:
     buildCommand: >-
       pip install -r backend/requirements/base.txt &&
       python backend/manage.py migrate --noinput &&
-      python backend/manage.py collectstatic --noinput
+      python backend/manage.py collectstatic --noinput &&
+      if [ "$AAMS_SEED_DEMO_DATA" = "true" ]; then python backend/manage.py seed_demo_data --quiet --noinput; fi
     startCommand: >-
       gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --chdir backend
     healthCheckPath: /api/health/
@@ -36,6 +37,12 @@ services:
         value: https://REPLACE-ME-aams-api.onrender.com
       - key: AAMS_TOKEN_TTL_SECONDS
         value: "2592000"
+      # Demo provisioning: OFF by default. Set to "true" (exact string) in
+      # the dashboard to seed the demo dataset during the build, then set
+      # back to "false" and redeploy. Invokes only the existing
+      # seed_demo_data management command (--quiet: no password in logs).
+      - key: AAMS_SEED_DEMO_DATA
+        value: "false"
       - key: DJANGO_SECURE_SSL_REDIRECT
         value: "1"
       - key: DJANGO_SESSION_COOKIE_SECURE

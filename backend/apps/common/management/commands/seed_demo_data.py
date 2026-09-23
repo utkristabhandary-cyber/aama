@@ -30,6 +30,17 @@ class Command(BaseCommand):
 
     help = "Seed demo data mirroring the frontend Phase 1 dataset (safe to re-run)."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--quiet",
+            action="store_true",
+            help=(
+                "Suppress the demo password in stdout. Intended for "
+                "deployment build logs (e.g. Render), where stdout is "
+                "persisted. Default output is unchanged."
+            ),
+        )
+
     @transaction.atomic
     def handle(self, *args, **options):
         semester, _ = Semester.objects.get_or_create(
@@ -227,6 +238,13 @@ class Command(BaseCommand):
             )
             notified += 1 if created else 0
 
+        if options.get("quiet"):
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Seed complete for {semester.code} (teachers: 3, students: {sum(len(v) for v in students_by_section.values())}, subjects: {len(subjects)}, notifications created: {notified})."
+                )
+            )
+            return
         self.stdout.write(
             self.style.SUCCESS(
                 f"Seed complete for {semester.code} (teachers: 3, students: {sum(len(v) for v in students_by_section.values())}, subjects: {len(subjects)}, notifications created: {notified}). "

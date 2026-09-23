@@ -87,6 +87,7 @@ you scale beyond one instance).
 | `CORS_ALLOWED_ORIGINS` | `https://<your-app>.vercel.app` | **exact** Vercel origin, no wildcard — paste after first Vercel deploy, then redeploy API |
 | `CSRF_TRUSTED_ORIGINS` | `https://<your-api>.onrender.com` | required for Django admin POSTs over HTTPS |
 | `AAMS_TOKEN_TTL_SECONDS` | `2592000` | 30 days; `0` disables expiry (local-dev only, never prod) |
+| `AAMS_SEED_DEMO_DATA` | `false` | demo provisioning only: `true` seeds the demo dataset at build (see §14); set back to `false` afterwards |
 | `DJANGO_SECURE_SSL_REDIRECT` | `1` | Render terminates TLS; proxy header is honored |
 | `DJANGO_SESSION_COOKIE_SECURE` | `1` | |
 | `DJANGO_CSRF_COOKIE_SECURE` | `1` | |
@@ -154,16 +155,32 @@ static host, no storage-backend changes (default staticfiles storage).
 
 ## 14. Demo data/account setup
 
-Render Shell (repo root), one time after first deploy:
+This is **demo provisioning, not production data initialization**. Two paths:
+
+**A. Build-time seeding (no Shell required — Render free plan).**
+`render.yaml` declares `AAMS_SEED_DEMO_DATA` defaulting to `"false"`. The
+build runs the seed **only** when it is exactly `"true"`:
+
+1. In the Render dashboard set `AAMS_SEED_DEMO_DATA=true` and deploy.
+   The build invokes `python backend/manage.py seed_demo_data --quiet
+   --noinput` after migrate/collectstatic (`--quiet` keeps the demo
+   password out of build logs).
+2. Verify the demo logins, then set `AAMS_SEED_DEMO_DATA=false` and
+   redeploy to return to the safe default.
+
+**B. Render Shell (paid plans),** repo root, one time after first deploy:
 
 ```
 python backend/manage.py seed_demo_data
 ```
 
-Idempotent; creates semester SEM-S4, sections A/B, timetable, and resets
-three accounts to the documented demo password: admin/`admin`,
-teacher/`tch-3`, student/`std-1` (username-based login). Rotate or delete
-these immediately for any non-demo use — the password is public in this repo.
+The command is idempotent (all `get_or_create`, single atomic transaction;
+re-runs create nothing new). **Warning:** every run **resets the demo
+admin account's password** to the documented demo password (teacher/student
+passwords are set on creation only). Creates semester SEM-S4, sections A/B,
+timetable, and accounts admin/`admin`, teacher/`tch-3`, student/`std-1`
+(username-based login). Rotate or delete these immediately for any non-demo
+use — the password is public in this repo.
 
 ## 15. Production verification checklist
 
@@ -188,3 +205,4 @@ these immediately for any non-demo use — the password is public in this repo.
 | Unstyled admin / 404 on `/static/*` | `collectstatic` didn't run or WhiteNoise misordered — build must include it; middleware sits right after `SecurityMiddleware` |
 | Frontend calls `127.0.0.1:8000` in production | `VITE_API_BASE_URL` unset at build — set it on Vercel and **redeploy** (baked at build time) |
 | `relation does not exist` on first request | migrations never ran — run the §12 manual fallback, then redeploy |
+| Demo seed ran on a non-demo database | `AAMS_SEED_DEMO_DATA` left `true` — set `false`, redeploy; reset affected passwords |
