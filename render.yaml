@@ -1,0 +1,54 @@
+# Render Blueprint for AAMS v2 — Django REST API + PostgreSQL.
+# The React/Vite frontend deploys separately on Vercel (see docs/26-DEPLOYMENT.md).
+# This file declares infrastructure only; it deploys nothing by itself.
+# After first deploy, replace the REPLACE_ME_* placeholders in the dashboard
+# (or in this file) with the real Vercel frontend origin.
+services:
+  - type: web
+    name: aams-api
+    runtime: python
+    plan: free
+    buildCommand: >-
+      pip install -r backend/requirements/base.txt &&
+      python backend/manage.py migrate --noinput &&
+      python backend/manage.py collectstatic --noinput
+    startCommand: >-
+      gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --chdir backend
+    healthCheckPath: /api/health/
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.base
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DJANGO_TIME_ZONE
+        value: UTC
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aams-db
+          property: connectionString
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://REPLACE-ME-VERCEL-APP.vercel.app
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://REPLACE-ME-aams-api.onrender.com
+      - key: AAMS_TOKEN_TTL_SECONDS
+        value: "2592000"
+      - key: DJANGO_SECURE_SSL_REDIRECT
+        value: "1"
+      - key: DJANGO_SESSION_COOKIE_SECURE
+        value: "1"
+      - key: DJANGO_CSRF_COOKIE_SECURE
+        value: "1"
+      - key: DJANGO_SECURE_HSTS_SECONDS
+        value: "31536000"
+      - key: DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS
+        value: "1"
+      - key: DJANGO_SECURE_HSTS_PRELOAD
+        value: "1"
+
+databases:
+  - name: aams-db
+    plan: free

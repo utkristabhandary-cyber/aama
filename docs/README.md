@@ -29,6 +29,8 @@ and BSSID/device-registration architecture).
 | 22 | KNOWN-ISSUES | Known bugs, limitations, conflicts with reports |
 | 23 | IMPLEMENTATION-GAPS | Mismatch between current and target |
 | 24 | NEXT-PHASE-PLAN | Recommended implementation order |
+| 25 | INSTITUTIONAL-DATA-IMPORT | Import engine, provisioning, password lifecycle |
+| 26 | DEPLOYMENT | Render + Vercel deployment runbook (authoritative for deploy) |
 | | AUDIT-MATRIX | Master feature-by-feature status table |
 | | CAMERA_SCANNER_AUDIT_REPORT | QR camera scanner audit & fix (this item) |
 | | archive/ | Historical phase reports, removed-architecture docs, AI Studio scaffold metadata |

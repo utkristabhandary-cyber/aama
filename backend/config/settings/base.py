@@ -69,6 +69,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    # Serves collected static files (/static/) with DEBUG=false on hosts
+    # with no separate static server (e.g. a Render web service). Must sit
+    # directly after SecurityMiddleware per WhiteNoise documentation.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -99,17 +103,44 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # Database -----------------------------------------------------------
-DATABASES = {
-    "default": {
-        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.getenv("DB_NAME") or "aams_db",
-        "USER": os.getenv("DB_USER") or "aams_user",
-        "PASSWORD": os.getenv("DB_PASSWORD", ""),
-        "HOST": os.getenv("DB_HOST") or "127.0.0.1",
-        "PORT": os.getenv("DB_PORT") or "5432",
+# Render PostgreSQL exposes a single DATABASE_URL connection string. When
+# set it takes precedence; otherwise the discrete DB_* variables (local
+# development) apply. Parsed with the standard library only — no extra
+# dependency. Accepted schemes: postgres:// and postgresql://.
+def _database_from_url(url):
+    from urllib.parse import unquote, urlparse
+
+    parsed = urlparse(url)
+    if parsed.scheme not in ("postgres", "postgresql"):
+        raise ImproperlyConfigured(
+            "DATABASE_URL must use the postgres:// or postgresql:// scheme."
+        )
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/") or "aams_db"),
+        "USER": unquote(parsed.username or "aams_user"),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "127.0.0.1",
+        "PORT": str(parsed.port or "5432"),
         "CONN_MAX_AGE": 60,
     }
-}
+
+
+_DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+if _DATABASE_URL:
+    DATABASES = {"default": _database_from_url(_DATABASE_URL)}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
+            "NAME": os.getenv("DB_NAME") or "aams_db",
+            "USER": os.getenv("DB_USER") or "aams_user",
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST") or "127.0.0.1",
+            "PORT": os.getenv("DB_PORT") or "5432",
+            "CONN_MAX_AGE": 60,
+        }
+    }
 
 # Custom user model --------------------------------------------------
 AUTH_USER_MODEL = "accounts.User"
@@ -210,6 +241,16 @@ CORS_ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# Trusted origins for CSRF-checked POSTs (Django admin / browsable API over
+# HTTPS). Empty by default so local development is untouched; production
+# sets the exact backend origin(s), e.g.
+# CSRF_TRUSTED_ORIGINS=https://aams-api.onrender.com
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
 
 # Production security flags ------------------------------------------------
 # Environment-gated so the plain-HTTP local stack keeps working untouched,

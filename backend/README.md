@@ -32,6 +32,11 @@ py manage.py runserver
 
 `GET /api/health/` returns `{"status": "ok"}` when the DB is reachable.
 
+> Production deployment (Render API + PostgreSQL, Vercel frontend) is
+> documented in `docs/26-DEPLOYMENT.md` — including `render.yaml`,
+> `DATABASE_URL` handling, and the exact Render/Vercel commands and
+> environment variables.
+
 ### Demo accounts (password `AaMS@#2026!`)
 
 | Role    | Email               |
